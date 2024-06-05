@@ -2,33 +2,32 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
 class AIRequestHandler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        data = json.loads(post_data)
-
-        prompt = data.get('prompt', '')
-
-        # Replace this with your actual AI logic to generate a response based on the prompt
-        generated_text = generate_text_based_on_prompt(prompt)
-
+    def _set_response(self):
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')  # Allow requests from any origin
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')  # Allow POST and OPTIONS methods
+        self.send_header('Access-Control-Allow-Headers', 'Content-type')  # Allow Content-type header
         self.end_headers()
-        self.wfile.write(json.dumps({'generated_text': generated_text}).encode('utf-8'))
 
-def generate_text_based_on_prompt(prompt):
-    # Replace this with your actual AI logic to generate text based on the prompt
-    # This can involve using a pre-trained model, such as GPT-2, to generate the text
-    # Ensure that the generated_text variable contains the generated text based on the prompt
-    generated_text = "Generated text based on the prompt: '{}'".format(prompt)
-    return generated_text
+    def do_POST(self):
+        self._set_response()
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        # Here you can process the POST data as needed
+        # For example, you can pass it to your AI model and generate a response
+        response_data = {"response": "This is the AI response"}
+        self.wfile.write(json.dumps(response_data).encode('utf-8'))
 
-def run(server_class=HTTPServer, handler_class=AIRequestHandler, port=8080):
+    def do_OPTIONS(self):
+        self._set_response()
+
+def run_server(server_class=HTTPServer, handler_class=AIRequestHandler, port=8080):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print('Starting server on port', port)
+    print(f"Starting server on port {port}...")
     httpd.serve_forever()
 
-if __name__ == "__main__":
-    run()
+if __name__ == '__main__':
+    run_server()
+    
