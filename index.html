@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Text Generator</title>
+    <style>
+        body {
+            /* Black to white gradient background */
+            background: linear-gradient(to bottom, #000000, #ffffff);
+            /* Ensures content is centered vertically and horizontally */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .content {
+            width: 300px; /* Adjust width of the content area */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: moveUp 2s ease forwards; /* Animation to move content upwards */
+        }
+
+        @keyframes moveUp {
+            from {
+                transform: translateY(100px); /* Start position */
+                opacity: 0; /* Start opacity */
+            }
+            to {
+                transform: translateY(0); /* End position */
+                opacity: 1; /* End opacity */
+            }
+        }
+
+        /* Additional styles for the form and text */
+        form {
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px; /* Add space between the form and the content area */
+        }
+
+        /* Style the search box with smooth edges */
+        #prompt {
+            border-radius: 20px; /* Adjust the border-radius to control the smoothness of the edges */
+            padding: 10px; /* Add padding for better appearance */
+            width: calc(100% - 22px); /* Make the search box fill the available width, subtracting the padding */
+            box-sizing: border-box; /* Include padding and border in the element's total width */
+            margin-bottom: 10px; /* Add some space below the search box */
+            border: none; /* Remove default border */
+            outline: none; /* Remove default focus outline */
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        h1, h2 {
+            color: #000000; /* Black text */
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>AI Text Generator</h1>
+        <form id="aiForm">
+            <!-- Search box with smooth edges -->
+            <input type="text" id="prompt" name="prompt" placeholder="Enter your prompt...">
+            <br>
+            <input type="button" id="generateBtn" value="Generate"> <!-- Use button type instead of submit -->
+        </form>
+        <h2>Generated Text:</h2>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Add event listener to the generate button
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const prompt = document.getElementById('prompt').value;
+            const request = {
+                prompt: prompt
+            };
+
+            fetch('http://localhost:8080', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = data.generated_text;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
